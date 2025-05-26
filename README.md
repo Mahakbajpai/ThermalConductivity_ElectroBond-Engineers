@@ -10,11 +10,11 @@
 
 Fill a brief description of this experiment here
 
-<b>Name of Developer | <b> Fill the name of experiment owner here 
+<b>Ravish Rajput | <b> Mahak Bajpai,Garima Ranawat,Shreyansh Maurya,Akshat
 :--|:--|
-<b> Institute | <b>  
-<b> Email id|     <b>  
-<b> Department |  
+<b> Rajkiya Engineering College Kannauj | <b>  
+<b> mahakbajpai77@gmail.com|     <b>  
+<b> CSE,EL |  
 
 ### Contributors List
 
