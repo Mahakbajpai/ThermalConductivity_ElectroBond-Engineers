@@ -8,7 +8,7 @@
 
 ### About the Experiment 
 
-Fill a brief description of this experiment here
+Experiment 1
 
 <b>Developer name | <b> Ravish Rajput
 :--|:--|
@@ -20,5 +20,7 @@ Fill a brief description of this experiment here
 
 SrNo | Name | Faculty or Student | Department| Institute | Email id
 :--|:--|:--|:--|:--|:--|
-1 | . | . | . | . | .
-2 | . | . | . | . | .
+1 | Mahak Bajpai | Student | CSE | REC Kannauj | mahakbajpai77@gmail.com
+2 | Garima Ranawat | Student | CSE| REC Kannauj | 
+3 | Shreyansh Maurya | Student | EL | REC Kannauj |
+4 | Akshat | Student | CSE | REC Kannauj |
