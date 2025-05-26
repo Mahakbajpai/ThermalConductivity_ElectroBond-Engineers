@@ -10,11 +10,11 @@
 
 Fill a brief description of this experiment here
 
-<b>Ravish Rajput | <b> Mahak Bajpai,Garima Ranawat,Shreyansh Maurya,Akshat
+<b>Developer name | <b> Ravish Rajput
 :--|:--|
-<b> Rajkiya Engineering College Kannauj | <b>  
-<b> mahakbajpai77@gmail.com|     <b>  
-<b> CSE,EL |  
+<b> Institute name | <b> Rajkiya Engineering College Kannauj 
+<b> e-mail|     <b>  mahakbajpai77@gmail.com
+<b> Department |  
 
 ### Contributors List
 
