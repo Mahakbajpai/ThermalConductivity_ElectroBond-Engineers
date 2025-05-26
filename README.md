@@ -1,7 +1,7 @@
 ## Introduction
 
 
-<b>Discipline | <b>Chemistry
+<b>Discipline | <b>Chemical Engineering
 :--|:--|
 <b> Lab | <b> Chemistry
 <b> Experiment|     <b> Preparation of phenol formaldehyde resin
