@@ -4,7 +4,7 @@
 <b>Discipline | <b>Chemical Engineering
 :--|:--|
 <b> Lab | <b> Chemistry
-<b> Experiment|     <b> Preparation of phenol formaldehyde resin
+<b> Experiment|     <b> To find out the thermal conductivity of liquid
 
 ### About the Experiment 
 
