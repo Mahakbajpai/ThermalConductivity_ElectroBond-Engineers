@@ -1,238 +1,631 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Thermal Conductivity Virtual Lab</title>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto&display=swap">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script id="MathJax-script" async
-    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-  <style>
-    body {
-      font-family: 'Roboto', sans-serif;
-      padding: 20px;
-      background: #f0f4f7;
-    }
-    h1, h2 {
-      text-align: center;
-    }
-    .form-group {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 20px;
-      justify-content: center;
-      margin-bottom: 20px;
-    }
-    .form-group div {
-      display: flex;
-      flex-direction: column;
-    }
-    label {
-      font-weight: bold;
-      margin-bottom: 5px;
-    }
-    input, select, button {
-      padding: 8px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-    }
-    canvas#simCanvas {
-      display: block;
-      margin: 20px auto;
-      background: #fff;
-      border: 2px solid #ccc;
-    }
-    .btn-group {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      margin: 20px 0;
-    }
-    #tempChart {
-      max-width: 800px;
-      margin: 0 auto;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Virtual Chemistry Lab - Thermal Conductivity</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .lab-equipment {
+            transition: all 0.3s ease;
+        }
+        .lab-equipment:hover {
+            transform: translateY(-5px);
+        }
+        .temperature-gradient {
+            background: linear-gradient(to bottom, #ff0000, #ff6600, #ffcc00, #ffffff, #66ccff, #0066ff, #0000ff);
+        }
+        .heat-flow-animation {
+            animation: heatFlow 3s linear infinite;
+        }
+        @keyframes heatFlow {
+            0% { transform: translateY(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(100px); opacity: 0; }
+        }
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.7);
+            transform: scale(0);
+            animation: ripple 0.6s linear;
+            pointer-events: none;
+        }
+        @keyframes ripple {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+    </style>
 </head>
-<body>
-  <h1>Virtual Lab: Thermal Conductivity of Liquid</h1>
+<body class="bg-gray-100 font-sans">
+    <!-- Navigation -->
+    <nav class="bg-blue-800 text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 flex items-center">
+                        <i class="fas fa-flask text-white text-2xl mr-2"></i>
+                        <span class="text-xl font-bold">Virtual Chemistry Lab</span>
+                    </div>
+                </div>
+                <div class="hidden md:ml-6 md:flex md:items-center">
+                    <button id="reset-btn" class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-md font-medium">
+                        <i class="fas fa-redo mr-2"></i>Reset Experiment
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
 
-  <div class="form-group">
-    <div>
-      <label for="liquid">Choose a liquid:</label>
-      <select id="liquid">
-        <option value="water">Water</option>
-        <option value="oil">Oil</option>
-        <option value="alcohol">Alcohol</option>
-      </select>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Experiment Area -->
+            <div class="lg:col-span-2 bg-white rounded-lg shadow-lg p-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">Thermal Conductivity of Liquids</h2>
+                
+                <div class="mb-6">
+                    <label for="liquid-select" class="block text-sm font-medium text-gray-700 mb-2">Select Liquid:</label>
+                    <select id="liquid-select" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                        <option value="water">Water</option>
+                        <option value="ethanol">Ethanol</option>
+                        <option value="glycerol">Glycerol</option>
+                        <option value="mercury">Mercury</option>
+                        <option value="oil">Vegetable Oil</option>
+                    </select>
+                </div>
+                
+                <div class="relative h-96 bg-gray-100 rounded-lg overflow-hidden border-2 border-gray-300" id="experiment-container">
+                    <!-- Hot plate -->
+                    <div id="hot-plate" class="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-32 h-6 bg-red-700 rounded-t-lg"></div>
+                    
+                    <!-- Test tube -->
+                    <div id="test-tube" class="absolute bottom-6 left-1/2 transform -translate-x-1/2 w-16 h-64 bg-gray-200 rounded-t-lg border-2 border-gray-400 overflow-hidden">
+                        <div id="liquid" class="absolute bottom-0 w-full h-48 bg-blue-300 transition-all duration-500"></div>
+                        
+                        <!-- Temperature gradient visualization -->
+                        <div id="temp-gradient" class="absolute inset-0 opacity-0 transition-opacity duration-500"></div>
+                        
+                        <!-- Heat flow particles -->
+                        <div id="heat-particles" class="absolute inset-0 overflow-hidden">
+                            <!-- Particles will be added dynamically -->
+                        </div>
+                    </div>
+                    
+                    <!-- Thermometers -->
+                    <div id="thermometer-bottom" class="absolute bottom-8 left-1/2 transform translate-x-12 w-6 h-24 bg-white border-2 border-gray-400 rounded-b-lg">
+                        <div class="absolute bottom-0 w-full bg-red-500 rounded-b-sm" style="height: 20%;"></div>
+                        <div class="absolute top-0 left-0 w-full text-center text-xs font-bold">100°C</div>
+                    </div>
+                    
+                    <div id="thermometer-top" class="absolute top-20 left-1/2 transform -translate-x-20 w-6 h-24 bg-white border-2 border-gray-400 rounded-b-lg">
+                        <div class="absolute bottom-0 w-full bg-blue-500 rounded-b-sm" style="height: 10%;"></div>
+                        <div class="absolute top-0 left-0 w-full text-center text-xs font-bold">20°C</div>
+                    </div>
+                    
+                    <!-- Labels -->
+                    <div class="absolute bottom-2 left-1/2 transform -translate-x-1/2 text-center text-sm font-medium">Hot Plate (100°C)</div>
+                    <div class="absolute top-24 left-1/2 transform -translate-x-1/2 text-center text-sm font-medium">Ambient (20°C)</div>
+                </div>
+                
+                <div class="mt-6 flex justify-between items-center">
+                    <div>
+                        <button id="start-btn" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-md font-medium">
+                            <i class="fas fa-play mr-2"></i>Start Experiment
+                        </button>
+                        <button id="pause-btn" class="bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-2 rounded-md font-medium ml-4 hidden">
+                            <i class="fas fa-pause mr-2"></i>Pause
+                        </button>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm text-gray-600">Time Elapsed: <span id="time-elapsed">0</span>s</p>
+                        <p class="text-sm text-gray-600">Current Temp (Top): <span id="current-temp">20.0</span>°C</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Data & Results -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">Data & Results</h2>
+                
+                <div class="mb-6">
+                    <h3 class="text-lg font-medium text-gray-700 mb-2">Temperature Readings</h3>
+                    <div class="h-48 overflow-y-auto border border-gray-200 rounded-md p-2">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Time (s)</th>
+                                    <th class="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Temp (°C)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="temp-readings" class="bg-white divide-y divide-gray-200">
+                                <!-- Data will be added here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <h3 class="text-lg font-medium text-gray-700 mb-2">Temperature Graph</h3>
+                    <div class="h-48 border border-gray-200 rounded-md p-2 relative">
+                        <canvas id="temp-chart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="bg-blue-50 p-4 rounded-md border border-blue-200">
+                    <h3 class="text-lg font-medium text-blue-800 mb-2">Calculated Results</h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <p class="text-sm text-gray-600">Thermal Conductivity (k):</p>
+                            <p class="text-xl font-bold" id="k-value">-- W/m·K</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-600">Heat Transfer Rate (Q):</p>
+                            <p class="text-xl font-bold" id="q-value">-- W</p>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <p class="text-sm text-gray-600">Equation: Q = k·A·ΔT/d</p>
+                        <p class="text-xs text-gray-500 mt-1">Where:<br>
+                        A = Cross-sectional area (0.0002 m²)<br>
+                        ΔT = Temperature difference (80°C)<br>
+                        d = Distance (0.1 m)</p>
+                    </div>
+                </div>
+                
+                <div class="mt-6">
+                    <h3 class="text-lg font-medium text-gray-700 mb-2">Theory</h3>
+                    <p class="text-sm text-gray-600">
+                        Thermal conductivity measures a material's ability to conduct heat. In this experiment, we measure how quickly heat transfers through different liquids when one end is heated.
+                    </p>
+                    <button id="theory-btn" class="mt-2 text-blue-600 text-sm font-medium hover:text-blue-800">
+                        <i class="fas fa-book mr-1"></i>Read More
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Theory Modal -->
+        <div id="theory-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+            <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-screen overflow-y-auto">
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-2xl font-bold text-gray-800">Thermal Conductivity Theory</h3>
+                        <button id="close-theory" class="text-gray-500 hover:text-gray-700">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="prose prose-sm max-w-none">
+                        <h4>What is Thermal Conductivity?</h4>
+                        <p>
+                            Thermal conductivity (often denoted by k, λ, or κ) is the property of a material to conduct heat. It is evaluated primarily in terms of Fourier's Law for heat conduction. Heat transfer occurs at a higher rate across materials of high thermal conductivity than across materials of low thermal conductivity.
+                        </p>
+                        
+                        <h4>Measurement Principle</h4>
+                        <p>
+                            In this virtual experiment, we use a simple setup to measure the thermal conductivity of liquids:
+                        </p>
+                        <ul>
+                            <li>A test tube containing the liquid is heated from the bottom (100°C)</li>
+                            <li>The top of the liquid is at ambient temperature (20°C)</li>
+                            <li>We measure how quickly the temperature at the top increases</li>
+                            <li>From this rate of temperature change, we can calculate the thermal conductivity</li>
+                        </ul>
+                        
+                        <h4>Key Equations</h4>
+                        <p>The fundamental equation for heat conduction is Fourier's Law:</p>
+                        <p class="text-center font-mono bg-gray-100 p-2 rounded">Q = -k·A·(ΔT/Δx)</p>
+                        <p>Where:</p>
+                        <ul>
+                            <li>Q = Heat transfer rate (W)</li>
+                            <li>k = Thermal conductivity (W/m·K)</li>
+                            <li>A = Cross-sectional area (m²)</li>
+                            <li>ΔT = Temperature difference (K or °C)</li>
+                            <li>Δx = Thickness of material (m)</li>
+                        </ul>
+                        
+                        <h4>Typical Values</h4>
+                        <p>Here are typical thermal conductivity values for common liquids at 20°C:</p>
+                        <table class="min-w-full border border-gray-200">
+                            <thead>
+                                <tr class="bg-gray-100">
+                                    <th class="border border-gray-200 px-4 py-2">Liquid</th>
+                                    <th class="border border-gray-200 px-4 py-2">k (W/m·K)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="border border-gray-200 px-4 py-2">Water</td>
+                                    <td class="border border-gray-200 px-4 py-2">0.606</td>
+                                </tr>
+                                <tr>
+                                    <td class="border border-gray-200 px-4 py-2">Ethanol</td>
+                                    <td class="border border-gray-200 px-4 py-2">0.169</td>
+                                </tr>
+                                <tr>
+                                    <td class="border border-gray-200 px-4 py-2">Glycerol</td>
+                                    <td class="border border-gray-200 px-4 py-2">0.285</td>
+                                </tr>
+                                <tr>
+                                    <td class="border border-gray-200 px-4 py-2">Mercury</td>
+                                    <td class="border border-gray-200 px-4 py-2">8.30</td>
+                                </tr>
+                                <tr>
+                                    <td class="border border-gray-200 px-4 py-2">Vegetable Oil</td>
+                                    <td class="border border-gray-200 px-4 py-2">0.17</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        
+                        <h4>Factors Affecting Thermal Conductivity</h4>
+                        <p>Several factors influence the thermal conductivity of liquids:</p>
+                        <ul>
+                            <li><strong>Temperature:</strong> Generally decreases with increasing temperature</li>
+                            <li><strong>Density:</strong> More dense liquids often have higher conductivity</li>
+                            <li><strong>Molecular Structure:</strong> Complex molecules tend to have lower conductivity</li>
+                            <li><strong>Presence of Impurities:</strong> Can either increase or decrease conductivity</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="mt-6 text-right">
+                        <button id="close-theory-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md">
+                            Close
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <div>
-      <label for="area">Area A (m²):</label>
-      <input type="number" id="area" value="0.02">
-    </div>
-    <div>
-      <label for="deltaT">Temperature Difference ΔT (°C):</label>
-      <input type="number" id="deltaT" value="80">
-    </div>
-    <div>
-      <label for="time">Time t (s):</label>
-      <input type="number" id="time" value="60">
-    </div>
-    <div>
-      <label for="thickness">Thickness d (m):</label>
-      <input type="number" id="thickness" value="0.01">
-    </div>
-    <div>
-      <label for="qOutput">Heat Q (J):</label>
-      <input type="text" id="qOutput" readonly>
-    </div>
-  </div>
 
-  <div class="btn-group">
-    <button id="startBtn">Start</button>
-    <button id="stopBtn">Stop</button>
-    <button id="resetBtn">Reset</button>
-  </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Liquid properties (thermal conductivity in W/m·K)
+        const liquids = {
+            water: { 
+                name: "Water",
+                k: 0.606,
+                color: "rgba(100, 149, 237, 0.7)",
+                heatRate: 0.5
+            },
+            ethanol: { 
+                name: "Ethanol",
+                k: 0.169,
+                color: "rgba(255, 215, 0, 0.7)",
+                heatRate: 0.2
+            },
+            glycerol: { 
+                name: "Glycerol",
+                k: 0.285,
+                color: "rgba(144, 238, 144, 0.7)",
+                heatRate: 0.3
+            },
+            mercury: { 
+                name: "Mercury",
+                k: 8.30,
+                color: "rgba(192, 192, 192, 0.7)",
+                heatRate: 2.0
+            },
+            oil: { 
+                name: "Vegetable Oil",
+                k: 0.17,
+                color: "rgba(218, 165, 32, 0.7)",
+                heatRate: 0.15
+            }
+        };
 
-  <h2>Thermal Conductivity Formula</h2>
-  <p style="text-align:center; font-size: 1.2em">$$ Q = \frac{k \cdot A \cdot \Delta T \cdot t}{d} $$</p>
+        // Experiment variables
+        let currentLiquid = "water";
+        let experimentRunning = false;
+        let experimentPaused = false;
+        let startTime = 0;
+        let currentTime = 0;
+        let currentTemperature = 20.0;
+        let temperatureReadings = [];
+        let heatInterval;
+        let experimentInterval;
+        let tempChart;
 
-  <canvas id="simCanvas" width="800" height="400"></canvas>
-  <canvas id="tempChart" height="200"></canvas>
+        // DOM elements
+        const liquidSelect = document.getElementById("liquid-select");
+        const startBtn = document.getElementById("start-btn");
+        const pauseBtn = document.getElementById("pause-btn");
+        const resetBtn = document.getElementById("reset-btn");
+        const timeElapsed = document.getElementById("time-elapsed");
+        const currentTemp = document.getElementById("current-temp");
+        const tempReadings = document.getElementById("temp-readings");
+        const kValue = document.getElementById("k-value");
+        const qValue = document.getElementById("q-value");
+        const liquidElement = document.getElementById("liquid");
+        const tempGradient = document.getElementById("temp-gradient");
+        const heatParticles = document.getElementById("heat-particles");
+        const theoryBtn = document.getElementById("theory-btn");
+        const theoryModal = document.getElementById("theory-modal");
+        const closeTheory = document.getElementById("close-theory");
+        const closeTheoryBtn = document.getElementById("close-theory-btn");
 
-  <script>
-    const canvas = document.getElementById("simCanvas");
-    const ctx = canvas.getContext("2d");
-
-    const liquidSelect = document.getElementById("liquid");
-    const areaInput = document.getElementById("area");
-    const deltaTInput = document.getElementById("deltaT");
-    const timeInput = document.getElementById("time");
-    const thicknessInput = document.getElementById("thickness");
-    const qOutput = document.getElementById("qOutput");
-
-    const conductivity = {
-      water: 0.6,
-      oil: 0.2,
-      alcohol: 0.16
-    };
-
-    let tempTop = 100;
-    let tempBottom = 20;
-    let isRunning = false;
-    let animationFrameId = null;
-    let frame = 0;
-
-    const tempChartCtx = document.getElementById('tempChart').getContext('2d');
-    const tempChart = new Chart(tempChartCtx, {
-      type: 'line',
-      data: {
-        labels: [],
-        datasets: [
-          { label: 'Top Plate Temp (°C)', data: [], borderColor: 'red', borderWidth: 2, fill: false },
-          { label: 'Bottom Plate Temp (°C)', data: [], borderColor: 'blue', borderWidth: 2, fill: false }
-        ]
-      },
-      options: {
-        responsive: true,
-        animation: false,
-        scales: {
-          x: { title: { display: true, text: 'Time (s)' } },
-          y: { title: { display: true, text: 'Temperature (°C)' }, min: 0, max: 120 }
+        // Initialize chart
+        function initChart() {
+            const ctx = document.getElementById('temp-chart').getContext('2d');
+            tempChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Temperature (°C)',
+                        data: [],
+                        borderColor: 'rgb(75, 192, 192)',
+                        tension: 0.1,
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            suggestedMin: 20,
+                            suggestedMax: 100
+                        }
+                    }
+                }
+            });
         }
-      }
-    });
 
-    function calculateQ() {
-      const k = conductivity[liquidSelect.value];
-      const A = parseFloat(areaInput.value);
-      const deltaT = parseFloat(deltaTInput.value);
-      const t = parseFloat(timeInput.value);
-      const d = parseFloat(thicknessInput.value);
-      const Q = (k * A * deltaT * t) / d;
-      qOutput.value = Q.toFixed(2);
-    }
-
-    function draw() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      // Top Plate
-      ctx.fillStyle = "#ff4d4d";
-      ctx.fillRect(300, 50, 200, 30);
-      ctx.fillStyle = "black";
-      ctx.fillText(`Top: ${tempTop.toFixed(1)}°C`, 350, 45);
-
-      // Gap between top plate and liquid
-      ctx.fillStyle = "#f0f4f7";
-      ctx.fillRect(300, 80, 200, 10);
-
-      // Liquid Layer
-      ctx.fillStyle = "skyblue";
-      ctx.fillRect(300, 90, 200, 140);
-
-      // Gap between liquid and bottom plate
-      ctx.fillStyle = "#f0f4f7";
-      ctx.fillRect(300, 230, 200, 10);
-
-      // Bottom Plate
-      ctx.fillStyle = "#4da6ff";
-      ctx.fillRect(300, 240, 200, 30);
-      ctx.fillStyle = "black";
-      ctx.fillText(`Bottom: ${tempBottom.toFixed(1)}°C`, 340, 290);
-
-      if (isRunning) {
-        const k = conductivity[liquidSelect.value];
-        const delta = (tempTop - tempBottom) * k * 0.01;
-
-        if (tempTop > tempBottom) {
-          tempTop -= delta;
-          tempBottom += delta;
+        // Update chart with new data
+        function updateChart(time, temp) {
+            tempChart.data.labels.push(time);
+            tempChart.data.datasets[0].data.push(temp);
+            tempChart.update();
         }
 
-        if (frame % 30 === 0) {
-          const timeLabel = (frame / 60).toFixed(1);
-          tempChart.data.labels.push(timeLabel);
-          tempChart.data.datasets[0].data.push(tempTop.toFixed(1));
-          tempChart.data.datasets[1].data.push(tempBottom.toFixed(1));
-          tempChart.update();
+        // Change liquid
+        function changeLiquid() {
+            currentLiquid = liquidSelect.value;
+            const liquid = liquids[currentLiquid];
+            
+            // Update liquid appearance
+            liquidElement.style.backgroundColor = liquid.color;
+            
+            // Reset experiment if running
+            if (experimentRunning) {
+                resetExperiment();
+            }
+            
+            // Update the k value display
+            kValue.textContent = liquid.k.toFixed(3) + " W/m·K";
+            
+            // Clear previous data
+            tempReadings.innerHTML = "";
+            temperatureReadings = [];
+            currentTemperature = 20.0;
+            currentTemp.textContent = currentTemperature.toFixed(1);
+            timeElapsed.textContent = "0";
+            
+            // Reset chart
+            if (tempChart) {
+                tempChart.data.labels = [];
+                tempChart.data.datasets[0].data = [];
+                tempChart.update();
+            }
         }
 
-        frame++;
-        animationFrameId = requestAnimationFrame(draw);
-      }
-    }
+        // Start experiment
+        function startExperiment() {
+            if (experimentRunning) return;
+            
+            experimentRunning = true;
+            experimentPaused = false;
+            startTime = Date.now();
+            currentTime = 0;
+            currentTemperature = 20.0;
+            temperatureReadings = [];
+            
+            startBtn.classList.add("hidden");
+            pauseBtn.classList.remove("hidden");
+            
+            // Show temperature gradient
+            tempGradient.classList.add("temperature-gradient");
+            tempGradient.style.opacity = "0.3";
+            
+            // Start heat flow animation
+            heatInterval = setInterval(createHeatParticle, 300);
+            
+            // Start recording temperature
+            experimentInterval = setInterval(updateExperiment, 1000);
+            
+            // Add initial reading
+            addTemperatureReading(0, currentTemperature);
+        }
 
-    document.getElementById("startBtn").addEventListener("click", () => {
-      if (!isRunning) {
-        isRunning = true;
-        calculateQ();
-        draw();
-      }
-    });
+        // Pause experiment
+        function pauseExperiment() {
+            if (!experimentRunning || experimentPaused) return;
+            
+            experimentPaused = true;
+            pauseBtn.innerHTML = '<i class="fas fa-play mr-2"></i>Resume';
+            
+            clearInterval(heatInterval);
+            clearInterval(experimentInterval);
+            
+            // Reduce gradient visibility
+            tempGradient.style.opacity = "0.1";
+        }
 
-    document.getElementById("stopBtn").addEventListener("click", () => {
-      isRunning = false;
-      cancelAnimationFrame(animationFrameId);
-    });
+        // Resume experiment
+        function resumeExperiment() {
+            if (!experimentRunning || !experimentPaused) return;
+            
+            experimentPaused = false;
+            pauseBtn.innerHTML = '<i class="fas fa-pause mr-2"></i>Pause';
+            startTime = Date.now() - (currentTime * 1000);
+            
+            // Restart heat flow animation
+            heatInterval = setInterval(createHeatParticle, 300);
+            
+            // Restart recording temperature
+            experimentInterval = setInterval(updateExperiment, 1000);
+            
+            // Restore gradient visibility
+            tempGradient.style.opacity = "0.3";
+        }
 
-    document.getElementById("resetBtn").addEventListener("click", () => {
-      isRunning = false;
-      cancelAnimationFrame(animationFrameId);
-      frame = 0;
-      tempTop = 100;
-      tempBottom = 20;
-      tempChart.data.labels = [];
-      tempChart.data.datasets[0].data = [];
-      tempChart.data.datasets[1].data = [];
-      tempChart.update();
-      qOutput.value = '';
-      draw();
-    });
+        // Reset experiment
+        function resetExperiment() {
+            experimentRunning = false;
+            experimentPaused = false;
+            
+            clearInterval(heatInterval);
+            clearInterval(experimentInterval);
+            
+            startBtn.classList.remove("hidden");
+            pauseBtn.classList.add("hidden");
+            
+            // Reset temperature and time
+            currentTemperature = 20.0;
+            currentTime = 0;
+            currentTemp.textContent = currentTemperature.toFixed(1);
+            timeElapsed.textContent = "0";
+            
+            // Hide temperature gradient
+            tempGradient.classList.remove("temperature-gradient");
+            tempGradient.style.opacity = "0";
+            
+            // Clear heat particles
+            heatParticles.innerHTML = "";
+            
+            // Change back to selected liquid
+            changeLiquid();
+        }
 
-    // Initial static draw
-    draw();
-    if (window.MathJax) MathJax.typeset();
-  </script>
+        // Update experiment state
+        function updateExperiment() {
+            if (experimentPaused) return;
+            
+            const liquid = liquids[currentLiquid];
+            
+            // Calculate new temperature
+            currentTime = Math.floor((Date.now() - startTime) / 1000);
+            const tempIncrease = liquid.heatRate * (1 - (currentTemperature - 20) / 80);
+            currentTemperature = Math.min(100, currentTemperature + tempIncrease);
+            
+            // Update displays
+            currentTemp.textContent = currentTemperature.toFixed(1);
+            timeElapsed.textContent = currentTime;
+            
+            // Add temperature reading every 5 seconds
+            if (currentTime % 5 === 0) {
+                addTemperatureReading(currentTime, currentTemperature);
+            }
+            
+            // Calculate heat transfer rate (Q = k·A·ΔT/d)
+            const A = 0.0002; // m² (cross-sectional area of test tube)
+            const deltaT = 100 - currentTemperature; // °C
+            const d = 0.1; // m (height of liquid column)
+            const Q = liquid.k * A * deltaT / d;
+            
+            qValue.textContent = Q.toFixed(5) + " W";
+            
+            // Stop experiment if temperature is close to 100°C
+            if (currentTemperature >= 99.5) {
+                resetExperiment();
+            }
+        }
+
+        // Add temperature reading to table and chart
+        function addTemperatureReading(time, temp) {
+            // Add to readings array
+            temperatureReadings.push({ time, temp });
+            
+            // Update table
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td class="px-2 py-1 whitespace-nowrap text-sm text-gray-900">${time}</td>
+                <td class="px-2 py-1 whitespace-nowrap text-sm text-gray-900">${temp.toFixed(1)}</td>
+            `;
+            tempReadings.appendChild(row);
+            
+            // Update chart
+            updateChart(time, temp);
+        }
+
+        // Create heat particle animation
+        function createHeatParticle() {
+            if (experimentPaused) return;
+            
+            const particle = document.createElement("div");
+            particle.className = "heat-flow-animation absolute w-2 h-2 rounded-full bg-red-500 opacity-70";
+            
+            // Random position at bottom of test tube
+            const leftPos = 8 + Math.random() * 48;
+            particle.style.left = `${leftPos}px`;
+            particle.style.bottom = "0";
+            
+            heatParticles.appendChild(particle);
+            
+            // Remove particle after animation
+            setTimeout(() => {
+                particle.remove();
+            }, 3000);
+        }
+
+        // Create ripple effect on buttons
+        function createRipple(event) {
+            const button = event.currentTarget;
+            const circle = document.createElement("span");
+            const rect = button.getBoundingClientRect();
+            const diameter = Math.max(rect.width, rect.height);
+            const radius = diameter / 2;
+            
+            circle.style.width = circle.style.height = `${diameter}px`;
+            circle.style.left = `${event.clientX - rect.left - radius}px`;
+            circle.style.top = `${event.clientY - rect.top - radius}px`;
+            circle.classList.add("ripple");
+            
+            const ripple = button.getElementsByClassName("ripple")[0];
+            if (ripple) {
+                ripple.remove();
+            }
+            
+            button.appendChild(circle);
+        }
+
+        // Event listeners
+        liquidSelect.addEventListener("change", changeLiquid);
+        startBtn.addEventListener("click", startExperiment);
+        pauseBtn.addEventListener("click", () => {
+            if (experimentPaused) {
+                resumeExperiment();
+            } else {
+                pauseExperiment();
+            }
+        });
+        resetBtn.addEventListener("click", resetExperiment);
+        theoryBtn.addEventListener("click", () => {
+            theoryModal.classList.remove("hidden");
+        });
+        closeTheory.addEventListener("click", () => {
+            theoryModal.classList.add("hidden");
+        });
+        closeTheoryBtn.addEventListener("click", () => {
+            theoryModal.classList.add("hidden");
+        });
+
+        // Add ripple effects to buttons
+        const buttons = document.querySelectorAll("button");
+        buttons.forEach(button => {
+            button.addEventListener("click", createRipple);
+        });
+
+        // Initialize
+        window.addEventListener("DOMContentLoaded", () => {
+            initChart();
+            changeLiquid();
+        });
+    </script>
 </body>
 </html>
