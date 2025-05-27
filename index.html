@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Thermal Conductivity Virtual Lab</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto&display=swap">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script id="MathJax-script" async
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      padding: 20px;
+      background: #f0f4f7;
+    }
+    h1, h2 {
+      text-align: center;
+    }
+    .form-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    .form-group div {
+      display: flex;
+      flex-direction: column;
+    }
+    label {
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    input, select, button {
+      padding: 8px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    canvas#simCanvas {
+      display: block;
+      margin: 20px auto;
+      background: #fff;
+      border: 2px solid #ccc;
+    }
+    .btn-group {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin: 20px 0;
+    }
+    #tempChart {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+  </style>
+</head>
+<body>
+  <h1>Virtual Lab: Thermal Conductivity of Liquid</h1>
+
+  <div class="form-group">
+    <div>
+      <label for="liquid">Choose a liquid:</label>
+      <select id="liquid">
+        <option value="water">Water</option>
+        <option value="oil">Oil</option>
+        <option value="alcohol">Alcohol</option>
+      </select>
+    </div>
+    <div>
+      <label for="area">Area A (m²):</label>
+      <input type="number" id="area" value="0.02">
+    </div>
+    <div>
+      <label for="deltaT">Temperature Difference ΔT (°C):</label>
+      <input type="number" id="deltaT" value="80">
+    </div>
+    <div>
+      <label for="time">Time t (s):</label>
+      <input type="number" id="time" value="60">
+    </div>
+    <div>
+      <label for="thickness">Thickness d (m):</label>
+      <input type="number" id="thickness" value="0.01">
+    </div>
+    <div>
+      <label for="qOutput">Heat Q (J):</label>
+      <input type="text" id="qOutput" readonly>
+    </div>
+  </div>
+
+  <div class="btn-group">
+    <button id="startBtn">Start</button>
+    <button id="stopBtn">Stop</button>
+    <button id="resetBtn">Reset</button>
+  </div>
+
+  <h2>Thermal Conductivity Formula</h2>
+  <p style="text-align:center; font-size: 1.2em">$$ Q = \frac{k \cdot A \cdot \Delta T \cdot t}{d} $$</p>
+
+  <canvas id="simCanvas" width="800" height="400"></canvas>
+  <canvas id="tempChart" height="200"></canvas>
+
+  <script>
+    const canvas = document.getElementById("simCanvas");
+    const ctx = canvas.getContext("2d");
+
+    const liquidSelect = document.getElementById("liquid");
+    const areaInput = document.getElementById("area");
+    const deltaTInput = document.getElementById("deltaT");
+    const timeInput = document.getElementById("time");
+    const thicknessInput = document.getElementById("thickness");
+    const qOutput = document.getElementById("qOutput");
+
+    const conductivity = {
+      water: 0.6,
+      oil: 0.2,
+      alcohol: 0.16
+    };
+
+    let tempTop = 100;
+    let tempBottom = 20;
+    let isRunning = false;
+    let animationFrameId = null;
+    let frame = 0;
+
+    const tempChartCtx = document.getElementById('tempChart').getContext('2d');
+    const tempChart = new Chart(tempChartCtx, {
+      type: 'line',
+      data: {
+        labels: [],
+        datasets: [
+          { label: 'Top Plate Temp (°C)', data: [], borderColor: 'red', borderWidth: 2, fill: false },
+          { label: 'Bottom Plate Temp (°C)', data: [], borderColor: 'blue', borderWidth: 2, fill: false }
+        ]
+      },
+      options: {
+        responsive: true,
+        animation: false,
+        scales: {
+          x: { title: { display: true, text: 'Time (s)' } },
+          y: { title: { display: true, text: 'Temperature (°C)' }, min: 0, max: 120 }
+        }
+      }
+    });
+
+    function calculateQ() {
+      const k = conductivity[liquidSelect.value];
+      const A = parseFloat(areaInput.value);
+      const deltaT = parseFloat(deltaTInput.value);
+      const t = parseFloat(timeInput.value);
+      const d = parseFloat(thicknessInput.value);
+      const Q = (k * A * deltaT * t) / d;
+      qOutput.value = Q.toFixed(2);
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Top Plate
+      ctx.fillStyle = "#ff4d4d";
+      ctx.fillRect(300, 50, 200, 30);
+      ctx.fillStyle = "black";
+      ctx.fillText(`Top: ${tempTop.toFixed(1)}°C`, 350, 45);
+
+      // Gap between top plate and liquid
+      ctx.fillStyle = "#f0f4f7";
+      ctx.fillRect(300, 80, 200, 10);
+
+      // Liquid Layer
+      ctx.fillStyle = "skyblue";
+      ctx.fillRect(300, 90, 200, 140);
+
+      // Gap between liquid and bottom plate
+      ctx.fillStyle = "#f0f4f7";
+      ctx.fillRect(300, 230, 200, 10);
+
+      // Bottom Plate
+      ctx.fillStyle = "#4da6ff";
+      ctx.fillRect(300, 240, 200, 30);
+      ctx.fillStyle = "black";
+      ctx.fillText(`Bottom: ${tempBottom.toFixed(1)}°C`, 340, 290);
+
+      if (isRunning) {
+        const k = conductivity[liquidSelect.value];
+        const delta = (tempTop - tempBottom) * k * 0.01;
+
+        if (tempTop > tempBottom) {
+          tempTop -= delta;
+          tempBottom += delta;
+        }
+
+        if (frame % 30 === 0) {
+          const timeLabel = (frame / 60).toFixed(1);
+          tempChart.data.labels.push(timeLabel);
+          tempChart.data.datasets[0].data.push(tempTop.toFixed(1));
+          tempChart.data.datasets[1].data.push(tempBottom.toFixed(1));
+          tempChart.update();
+        }
+
+        frame++;
+        animationFrameId = requestAnimationFrame(draw);
+      }
+    }
+
+    document.getElementById("startBtn").addEventListener("click", () => {
+      if (!isRunning) {
+        isRunning = true;
+        calculateQ();
+        draw();
+      }
+    });
+
+    document.getElementById("stopBtn").addEventListener("click", () => {
+      isRunning = false;
+      cancelAnimationFrame(animationFrameId);
+    });
+
+    document.getElementById("resetBtn").addEventListener("click", () => {
+      isRunning = false;
+      cancelAnimationFrame(animationFrameId);
+      frame = 0;
+      tempTop = 100;
+      tempBottom = 20;
+      tempChart.data.labels = [];
+      tempChart.data.datasets[0].data = [];
+      tempChart.data.datasets[1].data = [];
+      tempChart.update();
+      qOutput.value = '';
+      draw();
+    });
+
+    // Initial static draw
+    draw();
+    if (window.MathJax) MathJax.typeset();
+  </script>
+</body>
+</html>
