@@ -5,16 +5,16 @@
 
 
 <br>
-<b> Experiment : Name of the experiment	 <a name="top"></a> <br>
+<b> EXPERIMENT : THERMAL CONDUCTIVITY OF LIQUID	 <a name="top"></a> <br>
 </p>
 
 <b>Discipline | Chemical Engineering<b> 
 :--|:--|
 <b> Lab | Chemistry<b> 
-<b> Experiment|  Preparation of phenol formaldehyde resin <b> 
+<b> Experiment|  To find out the thermal conductivity of liquid <b> 
 
 
-<h4> [1. Focus Area](#LO)
+<h4> 1. Focus Area: Measurement of Thermal Conductivity of a Liquid
 <h4> [2. Learning Objectives ](#LO)
 <h4> [3. Instructional Strategy](#IS)
 <h4> [4. Task & Assessment Questions](#AQ)
