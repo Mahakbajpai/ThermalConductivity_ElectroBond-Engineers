@@ -2,12 +2,12 @@
   "version": 2.0,
   "questions": [
     {
-      "question": "This is a Sample Question 1?",
+      "question": "What is the primary mode of heat transfer during this experiment?",
       "answers": {
-        "a": "answer1",
-        "b": "answer2",
-        "c": "answer3",
-        "d": "answer4"
+        "a": "Conduction",
+        "b": "Convection",
+        "c": "Radiation",
+        "d": "Evaporatiion"
       },
       "explanations": {
         "a": "Explanation 1  <a href='www.google.com'>here</a>",
@@ -19,12 +19,12 @@
       "difficulty": "beginner"
     },
     {
-      "question": "This is a Sample Question 2?",
+      "question": "Which physical quantity is calculated in the thermal conductivity of liquids experiment?",
       "answers": {
-        "a": "answer1",
-        "b": "answer2",
-        "c": "answer3",
-        "d": "answer4"
+        "a": "Heat Capacity",
+        "b": "Thermal Resistance",
+        "c": "Thermal Conductivity",
+        "d": "Latent Heat"
       },
       "explanations": {
         "a": "Explanation 1  <a href='www.google.com'>here</a>",
@@ -33,6 +33,57 @@
         "d": "Explanation 2"
       },
       "correctAnswer": "c",
+      "difficulty": "beginner"
+    },
+     {
+      "question": "What is the SI unit of thermal conductivity?",
+      "answers": {
+        "a": "J/kg-K",
+        "b": "W/m-K",
+        "c": "W/m^2",
+        "d": "J/m^2.s"
+      },
+      "explanations": {
+        "a": "Explanation 1  <a href='www.google.com'>here</a>",
+        "b": "Explanation 2",
+        "c": "Explanation 2",
+        "d": "Explanation 2"
+      },
+      "correctAnswer": "b",
+      "difficulty": "beginner"
+    },
+     {
+      "question": "Which of the following factors will directly affect the rate of heat transfer in the experiment?",
+      "answers": {
+        "a": "Color of the liquid",
+        "b": "Volume of the container",
+        "c": "Thickness of the liquid layer",
+        "d": "Room humidity"
+      },
+      "explanations": {
+        "a": "Explanation 1  <a href='www.google.com'>here</a>",
+        "b": "Explanation 2",
+        "c": "Explanation 2",
+        "d": "Explanation 2"
+      },
+      "correctAnswer": "c",
+      "difficulty": "beginner"
+    },
+     {
+      "question": "What should be done before starting the experiment to ensure accuracy?",
+      "answers": {
+        "a": "Shake the apparatus",
+        "b": "Calibrate temperature sensors",
+        "c": "Heat the liquid quickly",
+        "d": "Stir the liquid continously"
+      },
+      "explanations": {
+        "a": "Explanation 1  <a href='www.google.com'>here</a>",
+        "b": "Explanation 2",
+        "c": "Explanation 2",
+        "d": "Explanation 2"
+      },
+      "correctAnswer": "b",
       "difficulty": "beginner"
     }
   ]
