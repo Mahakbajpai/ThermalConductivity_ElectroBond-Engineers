@@ -2,12 +2,12 @@
   "version": 2.0,
   "questions": [
     {
-      "question": "This is a Sample Question 1?",
+      "question": " If the temperature difference across the liquid layer was increased, how would it affect the rate of heat transfer?"
       "answers": {
-        "a": "answer1",
-        "b": "answer2",
-        "c": "answer3",
-        "d": "answer4"
+        "a": "It would decrease",
+        "b": "It would remain constant",
+        "c": "It would increase",
+        "d": " It would fluctuate randomly"
       },
       "explanations": {
         "a": "Explanation 1  <a href='www.google.com'>here</a>",
@@ -15,16 +15,16 @@
         "c": "Explanation 2",
         "d": "Explanation 2"
       },
-      "correctAnswer": "a",
+      "correctAnswer": "c",
       "difficulty": "beginner"
     },
     {
-      "question": "This is a Sample Question 2?",
+      "question": "During your experiment, if the thickness of the liquid layer was doubled, what would happen to the thermal conductivity value (assuming ideal conditions)?",
       "answers": {
-        "a": "answer1",
-        "b": "answer2",
-        "c": "answer3",
-        "d": "answer4"
+      "a" :"It would double",
+"b" :"It would become half",
+"c":" It would remain the same",
+"d":" It would become zero",
       },
       "explanations": {
         "a": "Explanation 1  <a href='www.google.com'>here</a>",
