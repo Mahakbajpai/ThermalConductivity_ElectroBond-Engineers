@@ -55,6 +55,33 @@
             margin: 1rem 0;
             border-radius: 0.25rem;
         }
+        .liquid-option {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .liquid-option:hover {
+            transform: scale(1.05);
+        }
+        .liquid-option.selected {
+            border: 3px solid #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+        }
+        .test-tube {
+            position: relative;
+            width: 40px;
+            height: 80px;
+            background-color: rgba(255, 255, 255, 0.7);
+            border-radius: 5px 5px 20px 20px;
+            border: 2px solid #cbd5e0;
+            overflow: hidden;
+        }
+        .test-tube-liquid {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 70%;
+            border-radius: 0 0 18px 18px;
+        }
     </style>
 </head>
 <body class="bg-gray-100 font-sans">
@@ -85,14 +112,49 @@
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                     <div>
-                        <label for="liquid-select" class="block text-sm font-medium text-gray-700 mb-2">Select Liquid:</label>
-                        <select id="liquid-select" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
-                            <option value="water">Water</option>
-                            <option value="ethanol">Ethanol</option>
-                            <option value="glycerol">Glycerol</option>
-                            <option value="mercury">Mercury</option>
-                            <option value="oil">Vegetable Oil</option>
-                        </select>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Select Liquid:</label>
+                        <div class="flex flex-wrap gap-4">
+                            <div class="liquid-option" data-liquid="water">
+                                <div class="flex flex-col items-center">
+                                    <div class="test-tube">
+                                        <div class="test-tube-liquid bg-blue-300"></div>
+                                    </div>
+                                    <span class="text-sm mt-1">Water</span>
+                                </div>
+                            </div>
+                            <div class="liquid-option" data-liquid="ethanol">
+                                <div class="flex flex-col items-center">
+                                    <div class="test-tube">
+                                        <div class="test-tube-liquid bg-yellow-300"></div>
+                                    </div>
+                                    <span class="text-sm mt-1">Ethanol</span>
+                                </div>
+                            </div>
+                            <div class="liquid-option" data-liquid="glycerol">
+                                <div class="flex flex-col items-center">
+                                    <div class="test-tube">
+                                        <div class="test-tube-liquid bg-green-200"></div>
+                                    </div>
+                                    <span class="text-sm mt-1">Glycerol</span>
+                                </div>
+                            </div>
+                            <div class="liquid-option" data-liquid="mercury">
+                                <div class="flex flex-col items-center">
+                                    <div class="test-tube">
+                                        <div class="test-tube-liquid bg-gray-300"></div>
+                                    </div>
+                                    <span class="text-sm mt-1">Mercury</span>
+                                </div>
+                            </div>
+                            <div class="liquid-option" data-liquid="oil">
+                                <div class="flex flex-col items-center">
+                                    <div class="test-tube">
+                                        <div class="test-tube-liquid bg-amber-200"></div>
+                                    </div>
+                                    <span class="text-sm mt-1">Vegetable Oil</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     
                     <div>
@@ -402,7 +464,6 @@
         let tempChart;
 
         // DOM elements
-        const liquidSelect = document.getElementById("liquid-select");
         const distanceInput = document.getElementById("distance-input");
         const areaInput = document.getElementById("area-input");
         const hotTempInput = document.getElementById("hot-temp-input");
@@ -433,6 +494,7 @@
         const currentDistance = document.getElementById("current-distance");
         const currentDeltaT = document.getElementById("current-delta-t");
         const currentQ = document.getElementById("current-q");
+        const liquidOptions = document.querySelectorAll('.liquid-option');
 
         // Initialize chart
         function initChart() {
@@ -481,12 +543,12 @@
         }
 
         // Change liquid
-        function changeLiquid() {
-            currentLiquid = liquidSelect.value;
-            const liquid = liquids[currentLiquid];
+        function changeLiquid(liquid) {
+            currentLiquid = liquid;
+            const liquidData = liquids[currentLiquid];
             
             // Update liquid appearance
-            liquidElement.style.backgroundColor = liquid.color;
+            liquidElement.style.backgroundColor = liquidData.color;
 
             // Reset experiment if running
             if (experimentRunning) {
@@ -494,7 +556,7 @@
             }
 
             // Update the k value display
-            kValue.textContent = liquid.k.toFixed(3) + " W/m·K";
+            kValue.textContent = liquidData.k.toFixed(3) + " W/m·K";
 
             // Clear previous data
             tempReadings.innerHTML = "";
@@ -511,6 +573,15 @@
                 tempChart.data.datasets[1].data = [];
                 tempChart.update();
             }
+
+            // Update selected state of liquid options
+            liquidOptions.forEach(option => {
+                if (option.dataset.liquid === currentLiquid) {
+                    option.classList.add('selected');
+                } else {
+                    option.classList.remove('selected');
+                }
+            });
         }
 
         // Update temperature displays
@@ -546,7 +617,7 @@
             // Update current values display
             currentArea.textContent = area.toFixed(6);
             currentDistance.textContent = distance.toFixed(2);
-            
+
             experimentRunning = true;
             experimentPaused = false;
             startTime = Date.now();
@@ -633,7 +704,7 @@
             coldParticles.innerHTML = "";
 
             // Change back to selected liquid
-            changeLiquid();
+            changeLiquid(currentLiquid);
         }
 
         // Update experiment state
@@ -757,42 +828,53 @@
             button.appendChild(circle);
         }
 
-        // Event listeners
-        liquidSelect.addEventListener("change", changeLiquid);
-        distanceInput.addEventListener("change", changeLiquid);
-        areaInput.addEventListener("change", changeLiquid);
-        hotTempInput.addEventListener("change", changeLiquid);
-        coldTempInput.addEventListener("change", changeLiquid);
-        startBtn.addEventListener("click", startExperiment);
-        pauseBtn.addEventListener("click", () => {
-            if (experimentPaused) {
-                resumeExperiment();
-            } else {
-                pauseExperiment();
-            }
-        });
-        resetBtn.addEventListener("click", resetExperiment);
-        theoryBtn.addEventListener("click", () => {
-            theoryModal.classList.remove("hidden");
-        });
-        closeTheory.addEventListener("click", () => {
-            theoryModal.classList.add("hidden");
-        });
-        closeTheoryBtn.addEventListener("click", () => {
-            theoryModal.classList.add("hidden");
-        });
-
-        // Add ripple effects to buttons
-        const buttons = document.querySelectorAll("button");
-        buttons.forEach(button => {
-            button.addEventListener("click", createRipple);
-        });
-
-        // Initialize
-        window.addEventListener("DOMContentLoaded", () => {
+        // Initialize the application
+        function init() {
+            // Initialize chart
             initChart();
-            changeLiquid();
-        });
+            
+            // Set initial liquid
+            changeLiquid(currentLiquid);
+            
+            // Add event listeners
+            startBtn.addEventListener('click', startExperiment);
+            pauseBtn.addEventListener('click', function() {
+                if (experimentPaused) {
+                    resumeExperiment();
+                } else {
+                    pauseExperiment();
+                }
+            });
+            resetBtn.addEventListener('click', resetExperiment);
+            
+            // Liquid selection
+            liquidOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    changeLiquid(this.dataset.liquid);
+                });
+            });
+            
+            // Theory modal
+            theoryBtn.addEventListener('click', function() {
+                theoryModal.classList.remove('hidden');
+            });
+            
+            closeTheory.addEventListener('click', function() {
+                theoryModal.classList.add('hidden');
+            });
+            
+            closeTheoryBtn.addEventListener('click', function() {
+                theoryModal.classList.add('hidden');
+            });
+            
+            // Ripple effects
+            [startBtn, pauseBtn, resetBtn, theoryBtn].forEach(btn => {
+                btn.addEventListener('click', createRipple);
+            });
+        }
+
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>
