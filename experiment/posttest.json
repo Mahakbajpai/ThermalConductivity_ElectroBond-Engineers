@@ -2,7 +2,7 @@
   "version": 2.0,
   "questions": [
     {
-      "question": " If the temperature difference across the liquid layer was increased, how would it affect the rate of heat transfer?"
+      "question 1": " If the temperature difference across the liquid layer was increased, how would it affect the rate of heat transfer?"
       "answers": {
         "a": "It would decrease",
         "b": "It would remain constant",
@@ -19,7 +19,7 @@
       "difficulty": "beginner"
     },
     {
-      "question": "During your experiment, if the thickness of the liquid layer was doubled, what would happen to the thermal conductivity value (assuming ideal conditions)?",
+      "question 2": "During your experiment, if the thickness of the liquid layer was doubled, what would happen to the thermal conductivity value (assuming ideal conditions)?",
       "answers": {
       "a" :"It would double",
 "b" :"It would become half",
@@ -35,5 +35,56 @@
       "correctAnswer": "c",
       "difficulty": "beginner"
     }
+{
+      "question 3": "Which one of the following could be a possible reason for errors in your measured thermal conductivity?)?",
+      "answers": {
+"a" :"Constant room temperature",
+"b" :"Perfect insulation",
+"c":" Heat loss to surroundings",
+"d":" Use of a calibrated thermometer",
+      },
+      "explanations": {
+        "a": "Explanation 1  <a href='www.google.com'>here</a>",
+        "b": "Explanation 2",
+        "c": "Explanation 2",
+        "d": "Explanation 2"
+      },
+      "correctAnswer": "c",
+      "difficulty": "beginner"
+    }
+{
+      "question 4": "If your calculated thermal conductivity value is significantly lower than the standard value, what could be a likely cause?",
+      "answers": {
+"a" :"Very low thermal gradient",
+"b" :"High ambient light",
+"c":" Use of distilled water",
+"d":" Accurate timing"
+},
+      "explanations": {
+        "a": "Explanation 1  <a href='www.google.com'>here</a>",
+        "b": "Explanation 2",
+        "c": "Explanation 2",
+        "d": "Explanation 2"
+      },
+      "correctAnswer": "a",
+      "difficulty": "beginner"
+    } 
+{
+      "question 5": " What conclusion can you draw if the thermal conductivity value remains constant after repeating the experiment multiple times under the same conditions?
+      "answers": {
+        "a": "The experiment setup is faulty",
+        "b": "The thermal conductivity of liquid is not measurable",
+        "c": "The experimental setup is consistent and reliable",
+        "d": " The liquid has no heat transfer capability"
+      },
+      "explanations": {
+        "a": "Explanation 1  <a href='www.google.com'>here</a>",
+        "b": "Explanation 2",
+        "c": "Explanation 2",
+        "d": "Explanation 2"
+      },
+      "correctAnswer": "c",
+      "difficulty": "beginner"
+    },
   ]
 }
