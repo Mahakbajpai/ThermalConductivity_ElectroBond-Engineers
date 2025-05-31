@@ -1,1 +1,1 @@
-### Power System Lab
+### Heat Transfer Operations Lab
