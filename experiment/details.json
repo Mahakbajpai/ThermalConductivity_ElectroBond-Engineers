@@ -1,0 +1,30 @@
+{
+
+   "details": [
+       {
+			"Experiment": "To find out the Thermal Conductivity of liquid",     
+			"Lab": "Chemical Engineering lab",               
+			"Discipline": "Chemical Engineering",				 
+			"Technology": "HTML CSS Javascript"         
+       }
+   ],
+
+   "developer": [
+       {       
+      "Developer": "Mr. Ravish Rajput",         
+      "Institute": "REC Kannauj",         
+      "InstituteAcronym": "RECK"   
+       }
+   ],
+
+   "contributer": [
+       {       
+			"Contributer": "Mahak Bajpai",             
+      "Institute": "REC Kannauj",               
+			"InstituteAcronym": "RECK"         
+       }
+
+       
+   ]
+
+}
