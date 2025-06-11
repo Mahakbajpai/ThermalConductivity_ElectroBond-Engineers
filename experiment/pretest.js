@@ -90,7 +90,7 @@
 
   const myQuestions = [
     {
-      question: "1.What is the primary mode of heat transfer in liquids during this experiment?",  ///// Write the question inside double quotes
+      question: "What is the primary mode of heat transfer in liquids during this experiment?",  ///// Write the question inside double quotes
       answers: {
         a: "Conduction",                  ///// Write the option 1 inside double quotes
         b: "Convection",                  ///// Write the option 2 inside double quotes
@@ -101,7 +101,7 @@
     },
 
     {
-     question: "2. Which physical quantity is calculated in the Thermal Conductivity of Liquids experiment?",  ///// Write the question inside double quotes
+     question: "Which physical quantity is calculated in the Thermal Conductivity of Liquids experiment?",  ///// Write the question inside double quotes
       answers: {
         a: "Heat Capacity",                  ///// Write the option 1 inside double quotes
         b: "Thermal Resistance ",                  ///// Write the option 2 inside double quotes
@@ -111,7 +111,7 @@
       correctAnswer: "c"                ///// Write the correct option inside double quotes
     },     
     {
-      question: "3.What is the SI unit of thermal conductivity? ",  ///// Write the question inside double quotes
+      question: "What is the SI unit of thermal conductivity? ",  ///// Write the question inside double quotes
        answers: {
          a: " J/kg·K",                  ///// Write the option 1 inside double quotes
          b: "W/m·K",                  ///// Write the option 2 inside double quotes
@@ -121,7 +121,7 @@
        correctAnswer: "b"                ///// Write the correct option inside double quotes
      }, 
      {
-      question: "4.Which of the following factors will directly affect the rate of heat transfer in the experiment? ",  ///// Write the question inside double quotes
+      question: "Which of the following factors will directly affect the rate of heat transfer in the experiment? ",  ///// Write the question inside double quotes
        answers: {
          a: "Color of the liquid",                  ///// Write the option 1 inside double quotes
          b: "Volume of the container",                  ///// Write the option 2 inside double quotes
@@ -132,7 +132,7 @@
      },                              ///// To add more questions, copy the section below 
     									                  ///// this line
       {
-      question: "5. What should be done before starting the experiment to ensure accuracy?",  ///// Write the question inside double quotes
+      question: "What should be done before starting the experiment to ensure accuracy?",  ///// Write the question inside double quotes
        answers: {
          a: "Shake the apparatus",                  ///// Write the option 1 inside double quotes
          b: "Calibrate temperature sensors",                  ///// Write the option 2 inside double quotes
