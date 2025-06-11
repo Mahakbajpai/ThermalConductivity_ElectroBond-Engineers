@@ -1,4 +1,4 @@
-## 🔬 Procedure: Measuring Thermal Conductivity of Liquids
+##  Procedure: Measuring Thermal Conductivity of Liquids
 
 1. **Launch the Virtual Lab**
    - Open the *Virtual Chemistry Lab* web application.
